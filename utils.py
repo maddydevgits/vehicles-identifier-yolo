@@ -1,9 +1,8 @@
 import cv2
 import numpy as np
-texts=[]
 
 # Draw a prediction box with confidence and title
-def draw_prediction(frame, classes, classId, conf, left, top, right, bottom):
+def draw_prediction(frame, classes, classId, conf, left, top, right, bottom,count):
     global texts
 
     # Draw a bounding box.
@@ -15,7 +14,7 @@ def draw_prediction(frame, classes, classId, conf, left, top, right, bottom):
     # Print a label of class.
     if classes:
         assert(classId < len(classes))
-        label = '%s: %s' % (classes[classId], label)
+        label = '%s: %s' % (classes[classId], count,label)
 
     labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
     top = max(top, labelSize[1])
@@ -25,7 +24,6 @@ def draw_prediction(frame, classes, classId, conf, left, top, right, bottom):
 
 # Process frame, eliminating boxes with low confidence scores and applying non-max suppression
 def process_frame(frame, outs, classes, confThreshold, nmsThreshold):
-    global texts
     # Get the width and height of the image
     frameHeight = frame.shape[0]
     frameWidth = frame.shape[1]
@@ -36,6 +34,7 @@ def process_frame(frame, outs, classes, confThreshold, nmsThreshold):
     classIds = []
     confidences = []
     boxes = []
+    count=0
     for out in outs:
         for detection in out:
             scores = detection[5:]
@@ -62,6 +61,7 @@ def process_frame(frame, outs, classes, confThreshold, nmsThreshold):
         top = box[1]
         width = box[2]
         height = box[3]
-        texts.append(classes[classId])
-        draw_prediction(frame, classes, classIds[i], confidences[i], left, top, left + width, top + height)
+        if(classids[i]==2):
+            count=count+1
+        draw_prediction(frame, classes, classIds[i], confidences[i], left, top, left + width, top + height,count)
     #print(texts)
